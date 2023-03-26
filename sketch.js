@@ -5,6 +5,16 @@ let grid = [];
 
 const DIM = 25;
 
+const scanGrid = 5
+
+var top_c = []
+var right_c = []
+var bottom_c = []
+var left_c = []
+var c_edges = []
+
+const c_threshold = 10;
+
 function preload() {
   // const path = 'rail';
   // for (let i = 0; i < 7; i++) {
@@ -27,7 +37,7 @@ function removeDuplicatedTiles(tiles) {
 }
 
 function setup() {
-  createCanvas(400, 400);
+  createCanvas(800, 800);
   //randomSeed(15);
 
   // tiles[0] = new Tile(tileImages[0], ['AAA', 'AAA', 'AAA', 'AAA']);
@@ -38,22 +48,53 @@ function setup() {
   // tiles[5] = new Tile(tileImages[5], ['ABA', 'AAA', 'ABA', 'AAA']);
   // tiles[6] = new Tile(tileImages[6], ['ABA', 'ABA', 'ABA', 'ABA']);
 
+
+
+  let domC = [];
+  let varEdge = [];
+  for (let i = 0; i < 13; i++) {
+    domC[i] = splitImage(tileImages[i])
+    image(tileImages[i], 0, 0, width, height)
+
+    for (let ie = 0; ie < scanGrid; ie++) {
+      // Top
+      top_c[ie] = domC[i][ie]
+      right_c[ie] = domC[i][ie * scanGrid + (scanGrid - 1)]
+      left_c[ie] = domC[i][ie * scanGrid]
+      bottom_c[ie] = domC[i][scanGrid * scanGrid - (scanGrid - ie)]
+    }
+
+    c_edges[i] = [top_c, right_c, left_c, bottom_c]
+
+  }
+  // console.log(domC[1][1])
+  // console.log(c_edges)
+
+
+  // for (let ie = 0; ie < scanGrid; ie++) {
+  //   console.log(domC[7][ie])
+  // }
+
   // Loaded and created the tiles
-  tiles[0] = new Tile(tileImages[0], ['AAA', 'AAA', 'AAA', 'AAA']);
-  tiles[1] = new Tile(tileImages[1], ['BBB', 'BBB', 'BBB', 'BBB']);
-  tiles[2] = new Tile(tileImages[2], ['BBB', 'BCB', 'BBB', 'BBB']);
-  tiles[3] = new Tile(tileImages[3], ['BBB', 'BDB', 'BBB', 'BDB']);
-  tiles[4] = new Tile(tileImages[4], ['ABB', 'BCB', 'BBA', 'AAA']);
-  tiles[5] = new Tile(tileImages[5], ['ABB', 'BBB', 'BBB', 'BBA']);
-  tiles[6] = new Tile(tileImages[6], ['BBB', 'BCB', 'BBB', 'BCB']);
-  tiles[7] = new Tile(tileImages[7], ['BDB', 'BCB', 'BDB', 'BCB']);
-  tiles[8] = new Tile(tileImages[8], ['BDB', 'BBB', 'BCB', 'BBB']);
-  tiles[9] = new Tile(tileImages[9], ['BCB', 'BCB', 'BBB', 'BCB']);
-  tiles[10] = new Tile(tileImages[10], ['BCB', 'BCB', 'BCB', 'BCB']);
-  tiles[11] = new Tile(tileImages[11], ['BCB', 'BCB', 'BBB', 'BBB']);
-  tiles[12] = new Tile(tileImages[12], ['BBB', 'BCB', 'BBB', 'BCB']);
+  // tiles[0] = new Tile(tileImages[0], ['AAA', 'AAA', 'AAA', 'AAA']);
+  // tiles[1] = new Tile(tileImages[1], ['BBB', 'BBB', 'BBB', 'BBB']);
+  // tiles[2] = new Tile(tileImages[2], ['BBB', 'BCB', 'BBB', 'BBB']);
+  // tiles[3] = new Tile(tileImages[3], ['BBB', 'BDB', 'BBB', 'BDB']);
+  // tiles[4] = new Tile(tileImages[4], ['ABB', 'BCB', 'BBA', 'AAA']);
+  // tiles[5] = new Tile(tileImages[5], ['ABB', 'BBB', 'BBB', 'BBA']);
+  // tiles[6] = new Tile(tileImages[6], ['BBB', 'BCB', 'BBB', 'BCB']);
+  // tiles[7] = new Tile(tileImages[7], ['BDB', 'BCB', 'BDB', 'BCB']);
+  // tiles[8] = new Tile(tileImages[8], ['BDB', 'BBB', 'BCB', 'BBB']);
+  // tiles[9] = new Tile(tileImages[9], ['BCB', 'BCB', 'BBB', 'BCB']);
+  // tiles[10] = new Tile(tileImages[10], ['BCB', 'BCB', 'BCB', 'BCB']);
+  // tiles[11] = new Tile(tileImages[11], ['BCB', 'BCB', 'BBB', 'BBB']);
+  // tiles[12] = new Tile(tileImages[12], ['BBB', 'BCB', 'BBB', 'BCB']);
+
+
+
 
   for (let i = 0; i < 12; i++) {
+    tiles[i] = new Tile(tileImages[i], c_edges[i]);
     tiles[i].index = i;
   }
 
@@ -66,7 +107,7 @@ function setup() {
     tempTiles = removeDuplicatedTiles(tempTiles);
     tiles = tiles.concat(tempTiles);
   }
-  console.log(tiles.length);
+  // console.log(tiles.length);
 
   // Generate the adjacency rules based on edges
   for (let i = 0; i < tiles.length; i++) {
@@ -211,4 +252,71 @@ function draw() {
   }
 
   grid = nextGrid;
+  // noLoop()
+}
+
+function splitImage(imageToScan) {
+  // Draw the image onto the canvas
+  // image(imageToScan, 0, 0);
+
+  // Split the image into 9 equal segments
+  const scan_thickness = 10
+  const segmentWidth = Math.floor(imageToScan.width / scanGrid);
+  const segmentHeight = Math.floor(imageToScan.height / scanGrid);
+  const segments = [];
+  for (let i = 0; i < scanGrid; i++) {
+    for (let j = 0; j < scanGrid; j++) {
+      const x = j * segmentWidth;
+      const y = i * segmentHeight;
+      // var segmentImageData = []
+      console.log(i, j)
+      if (j == 0) { // top
+        const segmentImageData = imageToScan.get(x, y, segmentWidth, scan_thickness);
+      } else if (j == scanGrid - 1) { // bottom
+        const segmentImageData = imageToScan.get(x, y + y - scan_thickness, segmentWidth, scan_thickness);
+      } else if (i == scanGrid - 1) { // right
+        const segmentImageData = imageToScan.get(x + x - scan_thickness, y, scan_thickness, segmentHeight);
+      } else if (i == 0) { // left
+        const segmentImageData = imageToScan.get(x, y - scan_thickness, segmentWidth, scan_thickness);
+      }
+      // const segmentImageData = imageToScan.get(x, y, segmentWidth, segmentHeight);
+      console.log(segmentImageData)
+      segmentImageData.loadPixels()
+      segments.push(segmentImageData);
+    }
+  }
+
+  // Calculate the dominant color of each segment
+  const dominantColors = [];
+  for (let i = 0; i < segments.length; i++) {
+    const pixels = segments[i].pixels;
+    const colorCounts = {};
+    let maxCount = 0;
+    let dominantColor = [0, 0, 0];
+    for (let j = 0; j < pixels.length; j += 4) {
+      const r = pixels[j];
+      const g = pixels[j + 1];
+      const b = pixels[j + 2];
+      const color = `rgb(${r},${g},${b})`;
+      if (colorCounts[color]) {
+        colorCounts[color]++;
+      } else {
+        colorCounts[color] = 1;
+      }
+      if (colorCounts[color] > maxCount) {
+        maxCount = colorCounts[color];
+        dominantColor = [r, g, b];
+      }
+    }
+    dominantColors.push(dominantColor);
+    // fill(dominantColor)
+    // stroke(255)
+    // let xp = i % scanGrid
+    // let yp = floor(i / scanGrid)
+    // circle((segmentWidth / 2) + segmentWidth * xp, (segmentWidth / 2) + segmentWidth * yp, 50)
+  }
+
+  // Log the dominant color of each segment
+  // console.log(dominantColors);
+  return dominantColors
 }
