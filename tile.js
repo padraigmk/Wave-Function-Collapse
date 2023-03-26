@@ -17,9 +17,10 @@ function compareEdge(a, b) {
     }
   }
 
-  console.log(a, b)
-  console.log(JSON.stringify(a), JSON.stringify(b.reverse()))
-  console.log(JSON.stringify(a) == JSON.stringify(b.reverse()))
+  // console.log(a, b)
+  // console.log(JSON.stringify(a))
+  // console.log(JSON.stringify(b))
+  // console.log(JSON.stringify(a) == JSON.stringify(b.reverse()))
 
   return JSON.stringify(a) == JSON.stringify(b.reverse());
 
@@ -47,6 +48,8 @@ class Tile {
 
       // Tile 5 can't match itself
       // if (tile.index == 5 && this.index == 5) continue;
+      // console.log(this)
+      // console.log(tile)
 
       // UP
       if (compareEdge(tile.edges[2], this.edges[0])) {

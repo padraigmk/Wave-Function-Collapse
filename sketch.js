@@ -3,7 +3,7 @@ const tileImages = [];
 
 let grid = [];
 
-const DIM = 25;
+const DIM = 20;
 
 const scanGrid = 5
 
@@ -52,20 +52,22 @@ function setup() {
 
   let domC = [];
   let varEdge = [];
+  background(0);
+
   for (let i = 0; i < 13; i++) {
     domC[i] = splitImage(tileImages[i])
-    image(tileImages[i], 0, 0, width, height)
-
+    // image(tileImages[i], 0, 0, width, height)
+    // console.log(domC[i])
     for (let ie = 0; ie < scanGrid; ie++) {
       // Top
       top_c[ie] = domC[i][ie]
       right_c[ie] = domC[i][ie * scanGrid + (scanGrid - 1)]
       left_c[ie] = domC[i][ie * scanGrid]
       bottom_c[ie] = domC[i][scanGrid * scanGrid - (scanGrid - ie)]
+      // console.log(scanGrid * scanGrid - (scanGrid - ie))
+
     }
-
-    c_edges[i] = [top_c, right_c, left_c, bottom_c]
-
+    c_edges[i] = [top_c, right_c, left_c.reverse(), bottom_c.reverse()]
   }
   // console.log(domC[1][1])
   // console.log(c_edges)
@@ -148,6 +150,60 @@ function mousePressed() {
 function draw() {
   background(0);
 
+  // ***** Debugging color matching ********
+
+  // noLoop()
+  // var imageToScan = tileImages[7]
+  // image(imageToScan, 0, 0, height, width)
+  // // debugger;
+  // const scan_thickness = 20
+  // const segmentWidth = Math.floor(imageToScan.width / scanGrid);
+  // const segmentHeight = Math.floor(imageToScan.height / scanGrid);
+  // const segments = [];
+  // for (let j = 0; j < scanGrid; j++) {
+  //   for (let i = 0; i < scanGrid; i++) {
+  //     const x = i * segmentWidth;
+  //     const y = j * segmentHeight;
+  //     if ((i == 0 && j == 0) || (i == scanGrid - 1 && j == scanGrid - 1) || (i == 0 && j == scanGrid - 1) || (i == scanGrid - 1 && j == 0)) {
+  //       segmentImageData = imageToScan.get(x, y, segmentWidth, segmentHeight);
+  //       strokeWeight(4);
+
+  //       stroke(255)
+
+  //       rect(x, y, segmentWidth, segmentHeight);
+  //       image(segmentImageData, x, y, segmentWidth, segmentHeight)
+
+  //     } else {
+  //       if (j == 0) { // top
+  //         segmentImageData = imageToScan.get(x, y, segmentWidth, scan_thickness);
+  //         stroke(255)
+  //         rect(x, y, segmentWidth, scan_thickness);
+  //         image(segmentImageData, x, y, segmentWidth, scan_thickness)
+  //       } else if (j == scanGrid - 1) { // bottom
+  //         segmentImageData = imageToScan.get(x, y + segmentHeight - scan_thickness, segmentWidth, scan_thickness);
+  //         stroke(255)
+  //         rect(x, y + segmentHeight - scan_thickness, segmentWidth, scan_thickness);
+  //         image(segmentImageData, x, y + segmentHeight - scan_thickness, segmentWidth, scan_thickness)
+  //       } else if (i == scanGrid - 1) { // right
+  //         segmentImageData = imageToScan.get(x + segmentWidth - scan_thickness, y, scan_thickness, segmentHeight);
+  //         stroke(255)
+  //         rect(x + segmentWidth - scan_thickness, y, scan_thickness, segmentHeight);
+  //         image(segmentImageData, x + segmentWidth - scan_thickness, y, scan_thickness, segmentHeight)
+  //       } else if (i == 0) { // left
+  //         segmentImageData = imageToScan.get(x, y, scan_thickness, segmentHeight);
+  //         stroke(255)
+  //         rect(x, y, scan_thickness, segmentHeight);
+  //         image(segmentImageData, x, y, scan_thickness, segmentHeight)
+  //       } else { // middle points
+  //         segmentImageData = imageToScan.get(x, y, 1, 1);
+  //       }
+  //     }
+  //     // const segmentImageData = imageToScan.get(x, y, segmentWidth, segmentHeight);
+  //     segmentImageData.loadPixels()
+  //     segments.push(segmentImageData);
+  //   }
+  // }
+
   const w = width / DIM;
   const h = height / DIM;
   for (let j = 0; j < DIM; j++) {
@@ -159,7 +215,7 @@ function draw() {
       } else {
         noFill();
         stroke(51);
-        rect(i * w, j * h, w, h);
+        // rect(i * w, j * h, w, h);
       }
     }
   }
@@ -260,27 +316,49 @@ function splitImage(imageToScan) {
   // image(imageToScan, 0, 0);
 
   // Split the image into 9 equal segments
-  const scan_thickness = 10
+  const scan_thickness = 5
   const segmentWidth = Math.floor(imageToScan.width / scanGrid);
   const segmentHeight = Math.floor(imageToScan.height / scanGrid);
   const segments = [];
-  for (let i = 0; i < scanGrid; i++) {
-    for (let j = 0; j < scanGrid; j++) {
-      const x = j * segmentWidth;
-      const y = i * segmentHeight;
-      // var segmentImageData = []
-      console.log(i, j)
-      if (j == 0) { // top
-        const segmentImageData = imageToScan.get(x, y, segmentWidth, scan_thickness);
-      } else if (j == scanGrid - 1) { // bottom
-        const segmentImageData = imageToScan.get(x, y + y - scan_thickness, segmentWidth, scan_thickness);
-      } else if (i == scanGrid - 1) { // right
-        const segmentImageData = imageToScan.get(x + x - scan_thickness, y, scan_thickness, segmentHeight);
-      } else if (i == 0) { // left
-        const segmentImageData = imageToScan.get(x, y - scan_thickness, segmentWidth, scan_thickness);
+  for (let j = 0; j < scanGrid; j++) {
+    for (let i = 0; i < scanGrid; i++) {
+      const x = i * segmentWidth;
+      const y = j * segmentHeight;
+      if ((i == 0 && j == 0) || (i == scanGrid - 1 && j == scanGrid - 1) || (i == 0 && j == scanGrid - 1) || (i == scanGrid - 1 && j == 0)) {
+        segmentImageData = imageToScan.get(x, y, segmentWidth, segmentHeight);
+        strokeWeight(4);
+
+        stroke(255)
+
+        rect(x, y, segmentWidth, segmentHeight);
+        image(segmentImageData, x, y, segmentWidth, segmentHeight)
+
+      } else {
+        if (j == 0) { // top
+          segmentImageData = imageToScan.get(x, y, segmentWidth, scan_thickness);
+          stroke(255)
+          rect(x, y, segmentWidth, scan_thickness);
+          image(segmentImageData, x, y, segmentWidth, scan_thickness)
+        } else if (j == scanGrid - 1) { // bottom
+          segmentImageData = imageToScan.get(x, y + segmentHeight - scan_thickness, segmentWidth, scan_thickness);
+          stroke(255)
+          rect(x, y + segmentHeight - scan_thickness, segmentWidth, scan_thickness);
+          image(segmentImageData, x, y + segmentHeight - scan_thickness, segmentWidth, scan_thickness)
+        } else if (i == scanGrid - 1) { // right
+          segmentImageData = imageToScan.get(x + segmentWidth - scan_thickness, y, scan_thickness, segmentHeight);
+          stroke(255)
+          rect(x + segmentWidth - scan_thickness, y, scan_thickness, segmentHeight);
+          image(segmentImageData, x + segmentWidth - scan_thickness, y, scan_thickness, segmentHeight)
+        } else if (i == 0) { // left
+          segmentImageData = imageToScan.get(x, y, scan_thickness, segmentHeight);
+          stroke(255)
+          rect(x, y, scan_thickness, segmentHeight);
+          image(segmentImageData, x, y, scan_thickness, segmentHeight)
+        } else { // middle points
+          segmentImageData = imageToScan.get(x, y, 1, 1);
+        }
       }
       // const segmentImageData = imageToScan.get(x, y, segmentWidth, segmentHeight);
-      console.log(segmentImageData)
       segmentImageData.loadPixels()
       segments.push(segmentImageData);
     }
@@ -288,6 +366,7 @@ function splitImage(imageToScan) {
 
   // Calculate the dominant color of each segment
   const dominantColors = [];
+  // console.log(segments)
   for (let i = 0; i < segments.length; i++) {
     const pixels = segments[i].pixels;
     const colorCounts = {};
@@ -298,6 +377,9 @@ function splitImage(imageToScan) {
       const g = pixels[j + 1];
       const b = pixels[j + 2];
       const color = `rgb(${r},${g},${b})`;
+      if (i == 1) {
+        // console.log(color)
+      }
       if (colorCounts[color]) {
         colorCounts[color]++;
       } else {
@@ -308,6 +390,10 @@ function splitImage(imageToScan) {
         dominantColor = [r, g, b];
       }
     }
+    if (i == 1) {
+      // debugger;
+    }
+    // console.log(dominantColor)
     dominantColors.push(dominantColor);
     // fill(dominantColor)
     // stroke(255)
