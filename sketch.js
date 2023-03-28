@@ -3,7 +3,7 @@ const tileImages = [];
 
 let grid = [];
 
-const DIM = 20;
+const DIM = 30;
 
 const scanGrid = 5
 
@@ -50,7 +50,7 @@ function setup() {
 
 
 
-  let domC = [];
+  var domC = [];
   let varEdge = [];
   background(0);
 
@@ -64,18 +64,16 @@ function setup() {
       right_c[ie] = domC[i][ie * scanGrid + (scanGrid - 1)]
       left_c[ie] = domC[i][ie * scanGrid]
       bottom_c[ie] = domC[i][scanGrid * scanGrid - (scanGrid - ie)]
-      // console.log(scanGrid * scanGrid - (scanGrid - ie))
-
     }
-    c_edges[i] = [top_c, right_c, left_c.reverse(), bottom_c.reverse()]
+    c_edges[i] = [top_c, right_c, bottom_c.reverse(), left_c.reverse()]
+    top_c = []
+    right_c = []
+    left_c = []
+    bottom_c = []
+
   }
-  // console.log(domC[1][1])
-  // console.log(c_edges)
 
 
-  // for (let ie = 0; ie < scanGrid; ie++) {
-  //   console.log(domC[7][ie])
-  // }
 
   // Loaded and created the tiles
   // tiles[0] = new Tile(tileImages[0], ['AAA', 'AAA', 'AAA', 'AAA']);
@@ -204,6 +202,48 @@ function draw() {
   //   }
   // }
 
+  // // Calculate the dominant color of each segment
+  // const dominantColors = [];
+  // // console.log(segments)
+  // for (let i = 0; i < segments.length; i++) {
+  //   const pixels = segments[i].pixels;
+  //   const colorCounts = {};
+  //   let maxCount = 0;
+  //   let dominantColor = [0, 0, 0];
+  //   for (let j = 0; j < pixels.length; j += 4) {
+  //     const r = pixels[j];
+  //     const g = pixels[j + 1];
+  //     const b = pixels[j + 2];
+  //     const color = `rgb(${r},${g},${b})`;
+  //     if (i == 1) {
+  //       // console.log(color)
+  //     }
+  //     if (colorCounts[color]) {
+  //       colorCounts[color]++;
+  //     } else {
+  //       colorCounts[color] = 1;
+  //     }
+  //     if (colorCounts[color] > maxCount) {
+  //       maxCount = colorCounts[color];
+  //       dominantColor = [r, g, b];
+  //     }
+  //   }
+  //   if (i == 1) {
+  //     // debugger;
+  //   }
+  //   // console.log(dominantColor)
+  //   dominantColors.push(dominantColor);
+  //   // fill(dominantColor)
+  //   // stroke(255)
+  //   // let xp = i % scanGrid
+  //   // let yp = floor(i / scanGrid)
+  //   // circle((segmentWidth / 2) + segmentWidth * xp, (segmentWidth / 2) + segmentWidth * yp, 50)
+  // }
+  // console.log(dominantColors)
+
+
+  // **********
+
   const w = width / DIM;
   const h = height / DIM;
   for (let j = 0; j < DIM; j++) {
@@ -316,7 +356,7 @@ function splitImage(imageToScan) {
   // image(imageToScan, 0, 0);
 
   // Split the image into 9 equal segments
-  const scan_thickness = 5
+  const scan_thickness = 10
   const segmentWidth = Math.floor(imageToScan.width / scanGrid);
   const segmentHeight = Math.floor(imageToScan.height / scanGrid);
   const segments = [];
